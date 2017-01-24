@@ -1,0 +1,38 @@
+{
+  "name": "alertaware-2.0",
+  "version": "2.0.0",
+  "description": "That's my project to finish my college. It's a notification system with context-awareness to identify what's is the best moment and way to send a notification!",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "babel-debug": "babel-node app.js --debug",
+    "start": "nodemon index.js"
+  },
+  "keywords": [
+    "context-awareness",
+    "notification",
+    "system",
+    "alertaware"
+  ],
+  "author": "adrianlemess",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-cli": "^6.22.2",
+    "babel-preset-latest": "^6.22.0",
+    "cross-env": "^3.1.4",
+    "dotenv-safe": "^4.0.3",
+    "nodemon": "^1.11.0"
+  },
+  "dependencies": {
+    "bluebird": "^3.4.7",
+    "body-parser": "^1.16.0",
+    "compression": "^1.6.2",
+    "cors": "^2.8.1",
+    "express": "^4.14.0",
+    "http": "0.0.0",
+    "lodash": "^4.17.4",
+    "mongoose": "^4.7.8",
+    "morgan": "^1.7.0",
+    "path": "^0.12.7"
+  }
+}
