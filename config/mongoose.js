@@ -2,9 +2,8 @@ import Promise from 'bluebird'
 import mongoose from 'mongoose'
 import { mongo } from './config'
 
-export default function (cb) {
-  // create the database connection
-
+export default function (callback) {
+  
   Object.keys(mongo.options).forEach((key) => {
     mongoose.set(key, mongo.options[key])
   })
@@ -34,7 +33,7 @@ export default function (cb) {
 
   // when the connection is open
   mongoose.connection.once('open', function () {
-    if (cb && typeof (cb) === 'function') { cb(); }
+    if (callback && typeof (callback) === 'function') { callback(); }
   });
 
   // if the Node process ends, close the Mongoose connection

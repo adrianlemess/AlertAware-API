@@ -4,9 +4,10 @@
   "description": "That's my project to finish my college. It's a notification system with context-awareness to identify what's is the best moment and way to send a notification!",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "",
     "babel-debug": "babel-node app.js --debug",
-    "start": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "start": "npm run dev"
   },
   "keywords": [
     "context-awareness",
@@ -17,6 +18,8 @@
   "author": "adrianlemess",
   "license": "ISC",
   "devDependencies": {
+    "apidoc": "^0.17.4",
+    "apidoc-markdown": "^0.2.0",
     "babel-cli": "^6.22.2",
     "babel-preset-latest": "^6.22.0",
     "cross-env": "^3.1.4",
@@ -27,12 +30,20 @@
     "bluebird": "^3.4.7",
     "body-parser": "^1.16.0",
     "compression": "^1.6.2",
+    "consign": "^0.1.2",
     "cors": "^2.8.1",
     "express": "^4.14.0",
+    "glob": "^7.1.1",
+    "helmet": "^3.4.0",
     "http": "0.0.0",
     "lodash": "^4.17.4",
+    "method-override": "^2.3.7",
+    "mm-node-logger": "0.0.1",
     "mongoose": "^4.7.8",
     "morgan": "^1.7.0",
-    "path": "^0.12.7"
+    "multer": "^1.2.1",
+    "passport": "^0.3.2",
+    "path": "^0.12.7",
+    "redis": "^2.6.5"
   }
 }
