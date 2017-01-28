@@ -10,6 +10,7 @@ import helmet from 'helmet';
 import multer from 'multer';
 // import pathUtils from '../utils/path-utils';
 import routes from './routes';
+import authenticationConfig from './authenticationConfig';
 const app = express();
 const SixMonths = 15778476000;
 
@@ -63,13 +64,11 @@ function initCrossDomain(app) {
     });
 }
 
-// function initConfigAuthentication(app) {
-//   var authenticationConfig = app.authenticationConfig;
-//   require(path.resolve('./config/authenticationConfig.js'))(app);
-// }
+function initConfigAuthentication(app) {
+    require(path.resolve(authenticationConfig))(app);
+}
 
 function initRoutes(app) {
-    // let routes = app.config.routes;
     app.use('/api', routes);
 }
 
@@ -78,7 +77,7 @@ export default () => {
     initMiddlewareAndExpressConfigs(app);
     initHelmetHeaders(app);
     initCrossDomain(app);
-    // initConfigAuthentication(app);
+    initConfigAuthentication(app);
     initRoutes(app);
     return app
 }

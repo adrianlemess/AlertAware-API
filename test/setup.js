@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events'
 import mockgoose from 'mockgoose'
-import mongoose from '../config/'
-import { config } from '../config/'
+import mongoose from '../config/mongoose'
+import { config } from '../config/config'
 
 EventEmitter.defaultMaxListeners = Infinity
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000

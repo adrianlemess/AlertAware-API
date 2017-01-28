@@ -1,7 +1,7 @@
 import { stub } from 'sinon';
 import request from 'supertest';
-import { masterKey } from '../config/config';
-import UserController from '../../app/controller/user-controller.js';
+import { masterKey } from '../../config/config';
+import UserController from '../../app/services/user-service.js';
 import { verify } from '../../app/services/jwt-service';
 import express from '../../config/express';
 import routes from '../../config/routes';
