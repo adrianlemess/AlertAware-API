@@ -9,76 +9,58 @@ import path from 'path';
 import helmet from 'helmet';
 import multer from 'multer';
 // import pathUtils from '../utils/path-utils';
-import consign from 'consign';
 import routes from './routes';
 const app = express();
 const SixMonths = 15778476000;
 
 function initMiddlewareAndExpressConfigs(app) {
-  // Showing stack errors
-  app.set('showStackError', true);
-  app.set("view engine", "ejs");
-  app.set("views", "../app/views")
-  app.use(express.static(__dirname + '/public'))
+    // Showing stack errors
+    app.set('showStackError', true);
+    app.set("view engine", "ejs");
+    app.set("views", "../app/views")
+    app.use(express.static(__dirname + '/public'))
 
-  // Enable jsonp
-  app.enable('jsonp callback');
-  if (env === 'development' || env === 'test') {
-    // Enable logger (morgan)
-    app.use(morgan('dev'));
-    app.use(compression())
-    // Disable views cache
-    app.set('view cache', false);
-  } else if (env === 'production') {
-    app.locals.cache = 'memory';
-  }
+    // Enable jsonp
+    app.enable('jsonp callback');
+    if (env === 'development' || env === 'test') {
+        // Enable logger (morgan)
+        app.use(morgan('dev'));
+        app.use(compression())
+            // Disable views cache
+        app.set('view cache', false);
+    } else if (env === 'production') {
+        app.locals.cache = 'memory';
+    }
 
-  // Request body parsing middleware should be above methodOverride
-  app.use(bodyParser.urlencoded({
-    extended: true
-  }));
-  app.use(bodyParser.json());
-  app.use(methodOverride());
-}
-
-
-function initConsign(app) {
-  consign()
-    .include('config/config.js')
-    .then('config/redis.js')
-    .into(app);
-    //.then('config/mongoose.js')
-    
-    // .then('app/models')
-    // .then('config/authenticationConfig.js')
-    // .then('app/services')
-    // .then('app/controllers')
-    
-    // .then('app/authenticationStrategies')
-    
+    // Request body parsing middleware should be above methodOverride
+    app.use(bodyParser.urlencoded({
+        extended: true
+    }));
+    app.use(bodyParser.json());
+    app.use(methodOverride());
 }
 
 function initHelmetHeaders(app) {
-  app.use(helmet.frameguard());
-  app.use(helmet.xssFilter());
-  app.use(helmet.noSniff())
-  app.use(helmet.ieNoOpen());
-  app.use(helmet.hsts({
-    "maxAge": SixMonths,
-    "includeSubdomains": true,
-    "force": true
-  }));
-  app.disable("x-powered-by");
+    app.use(helmet.frameguard());
+    app.use(helmet.xssFilter());
+    app.use(helmet.noSniff())
+    app.use(helmet.ieNoOpen());
+    app.use(helmet.hsts({
+        "maxAge": SixMonths,
+        "includeSubdomains": true,
+        "force": true
+    }));
+    app.disable("x-powered-by");
 }
 
 function initCrossDomain(app) {
-  app.use(cors());
-  app.use(function (req, res, next) {
-    res.set('Access-Control-Allow-Origin', '*');
-    res.set('Access-Control-Allow-Methods', 'GET, POST, DELETE, PUT');
-    res.set('Access-Control-Allow-Headers', 'Origin, Accept, Content-Type, X-Requested-With, X-CSRF-Token');
-    next();
-  });
+    app.use(cors());
+    app.use(function(req, res, next) {
+        res.set('Access-Control-Allow-Origin', '*');
+        res.set('Access-Control-Allow-Methods', 'GET, POST, DELETE, PUT');
+        res.set('Access-Control-Allow-Headers', 'Origin, Accept, Content-Type, X-Requested-With, X-CSRF-Token');
+        next();
+    });
 }
 
 // function initConfigAuthentication(app) {
@@ -87,17 +69,16 @@ function initCrossDomain(app) {
 // }
 
 function initRoutes(app) {
-  // let routes = app.config.routes;
-  app.use('/api', routes);
+    // let routes = app.config.routes;
+    app.use('/api', routes);
 }
 
 export default () => {
-  const app = express();
-  initMiddlewareAndExpressConfigs(app);
-  initConsign(app);
-  initHelmetHeaders(app);
-  initCrossDomain(app);
-  // initConfigAuthentication(app);
-  initRoutes(app);
-  return app
+    const app = express();
+    initMiddlewareAndExpressConfigs(app);
+    initHelmetHeaders(app);
+    initCrossDomain(app);
+    // initConfigAuthentication(app);
+    initRoutes(app);
+    return app
 }
