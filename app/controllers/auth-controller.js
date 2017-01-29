@@ -19,17 +19,19 @@ export const signin = (req, res, next) => {
 }
 
 export const signout = (req, res) => {
-    tokenService.expireToken(req.headers, function(err, success) {
-        if (err) {
-            return res.status(401).send(err.message);
-        }
-        if (success) {
-            delete req.user;
-            res.sendStatus(200);
-        } else {
-            res.sendStatus(401);
-        }
-    });
+    tokenService.expireToken(req.headers)
+        .then(success => {
+            if (success) {
+                console.log(success)
+                delete req.user;
+                res.sendStatus(200);
+            } else {
+                res.sendStatus(401);
+            }
+        })
+        .catch(err => {
+            res.status(401).send(err);
+        })
 }
 
 export const signup = (req, res) => {

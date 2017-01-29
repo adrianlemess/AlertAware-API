@@ -40,73 +40,33 @@ function createTokenWithPayloadAndStore(payload) {
     }
 }
 
-/**
- * Expires a token by deleting the entry in redis.
- *
- * @method expireToken
- * @param {Object}   headers The request headers
- * @param {Function} cb      Callback function
- * @returns {Function} callback function `callback(null, true)` if successfully deleted
- */
-export const expireToken = (headers, cb) => {
-    try {
-        var token = this.extractTokenFromHeader(headers);
-        if (token == null) { return cb(new Error('Token is null')); }
+function getValidtokenFromHeaders(headers) {
+    return new Promise((resolve, reject) => {
+        var token = extractTokenFromHeader(headers);
+        if (token == null)
+            reject('Token is null');
+        resolve(token);
+    })
 
-        if (redis) {
-            // delete token from redis
-            redis.del(token, function(err, reply) {
-                if (err) {
-                    return cb(err);
-                }
-
-                if (!reply) {
-                    return cb(new Error('Não autorizado'));
-                }
-
-                return cb(null, true);
-            });
-        } else {
-            cb(null, true);
-        }
-    } catch (err) {
-        return cb(err);
-    }
 }
 
+export const expireToken = (headers) => {
+    return getValidtokenFromHeaders(headers)
+        .then(token => redisService.deleteToken(token))
+        .then(result => (result))
+        .catch(err => err)
+}
 
-/**
- * Verify if token is valid.
- *
- * @method verifyToken
- * @param {Object}   headers The request headers
- * @param {Function} cb      Callback function
- * @returns {Function} callback function `callback(null, JSON.parse(userData))` if token exist
- */
-export const verifyToken = (headers, cb) => {
-    try {
-        var token = this.extractTokenFromHeader(headers);
+export const verifyToken = (headers) => {
+    return getValidtokenFromHeaders(headers)
+        .then(token => redisService.getToken(token))
+        .then(result => console.log(result))
+        .catch(err => err)
 
-        if (token == null) { return cb(new Error('Token is null')); }
-
-        if (redis) {
-            // gets the associated data of the token
-            redis.get(token, function(err, userData) {
-                if (err) { return cb(err); }
-
-                if (!userData) { return cb(new Error('Token not found')); }
-
-                return cb(null, JSON.parse(userData));
-            });
-        } else {
-            cb(null, true);
-        }
-    } catch (err) {
-        return cb(err);
-    }
 }
 
 export const extractTokenFromHeader = (headers) => {
+    console.log(headers.authorization);
     if (headers == null) throw new Error('Header is null');
     if (headers.authorization == null) throw new Error('Authorization header is null');
 
