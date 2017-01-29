@@ -2,28 +2,41 @@ import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import mongoose from "mongoose";
 import Promise from "bluebird"
+import User from "../models/user";
 
 function localStrategy(User, config) {
     passport.use(new LocalStrategy({
         usernameField: "username",
         passwordField: "password"
-    }, (username, password) => {
-        return findValidUser(username, passport)
-            .then(validatePasswordIfUsernameIsValid)
-            .then(returnAuthencationResponse)
-            .then(userValid => userValid)
-            .catch(handleError)
+    }, (username, password, done) => {
+        findValidUser(username, passport)
+            .then(user => {
+                validatePasswordIfUsernameIsValid(user, password)
+                    .then(result => {
+                        if (!result) {
+                            done(null, result, "Password or Username not match");
+                        }
+                        // success
+                        done(null, user);
+                    })
+            })
+            .catch(err => done(err, null));
     }))
 
 }
 
 function findValidUser(username, passport) {
-    return User.findOne({
-        username: username.toLowerCase()
+    return new Promise((resolve, reject) => {
+        User.findOne({
+            username: username.toLowerCase()
+        }, (err, user) => {
+            if (err) reject(err);
+            resolve(user);
+        })
     })
 }
 
-function validatePasswordIfUsernameIsValid(user) {
+function validatePasswordIfUsernameIsValid(user, password) {
     // no user found with that username
     if (!user) {
         throw new Error("The username is not registered.");
@@ -31,57 +44,10 @@ function validatePasswordIfUsernameIsValid(user) {
     return user.comparePassword(password)
 }
 
-function resultAuthenticationValidate(isMatch) {
-    return new Promise((resolve) => {
-        if (err) { throw new Error(err); }
 
-        // password did not match
-        if (!isMatch) {
-            throw new Error("The password is not correct.");
-        }
-
-        // success
-        resolve(user);
-    })
-};
 
 function handleError(err) {
     console.log(err);
 }
 
 export default localStrategy;
-// function localStrategy(User, config) {
-//     console.log("teste");
-//     passport.use(new LocalStrategy({
-//             usernameField: 'username',
-//             passwordField: 'password'
-//         },
-//         function(username, password, callback) {
-//             User.findOne({
-//                 username: username.toLowerCase()
-//             }, function(err, user) {
-//                 console.log("user", err);
-//                 if (err) return callback(err);
-
-//                 // no user found with that username
-//                 if (!user) {
-//                     return callback(null, false, { message: 'The username is not registered.' });
-//                 }
-//                 // make sure the password is correct
-//                 user.comparePassword(password, function(err, isMatch) {
-//                     if (err) { return callback(err); }
-
-//                     // password did not match
-//                     if (!isMatch) {
-//                         return callback(null, false, { message: 'The password is not correct.' });
-//                     }
-
-//                     // success
-//                     return callback(null, user);
-//                 });
-//             });
-//         }
-//     ));
-// }
-
-// module.exports = localStrategy;

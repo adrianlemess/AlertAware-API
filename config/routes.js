@@ -16,5 +16,5 @@ router.get('/', function(req, res) {
 // //Authentication routes
 router.post('/auth/signin', signin);
 router.post('/auth/signup', signup);
-// router.post('/auth/signout', authenticationController.signout);
+router.post('/auth/signout', signout);
 export default router;

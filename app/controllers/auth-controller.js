@@ -5,8 +5,8 @@ import * as userService from "../services/user-service";
 import User from "../models/user";
 
 export const signin = (req, res, next) => {
-    passport.authenticate('local', function(err, user, info) {
-        var error = err || info;
+    passport.authenticate('local', function(err, user) {
+        var error = err;
         if (error) return res.status(401).send(error);
         // Remove sensitive data before login
         user.password = undefined;
