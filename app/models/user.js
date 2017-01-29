@@ -1,13 +1,5 @@
-/**
- *users.schema.js
- *
- * User's Schema with some methods to encrypt and compare User's password
- * 
- */
-
-const bcrypt = require('bcryptjs');
-const mongoose = require('mongoose');
-
+import bcrypt from 'bcryptjs';
+import mongoose from 'mongoose';
 
 const SALT_WORK_FACTOR = 10;
 const authTypes = ['github', 'twitter', 'facebook', 'google'];
@@ -146,6 +138,5 @@ userSchema.methods.comparePassword = function(password, cb) {
 };
 
 const model = mongoose.model('User', userSchema)
-
 export const schema = model.schema
 export default model

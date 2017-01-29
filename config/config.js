@@ -47,7 +47,7 @@ const config = {
     },
     test: {
         mongo: {
-            uri: 'mongodb://localhost/alert-aware-test',
+            uri: 'mongodb://localhost/alertaware-test',
             options: {
                 debug: false
             }
@@ -55,9 +55,9 @@ const config = {
     },
     development: {
         mongo: {
-            uri: 'mongodb://localhost/alert-aware-dev',
+            uri: 'mongodb://localhost/alertaware-dev',
             options: {
-                debug: true
+                debug: false
             }
         }
     },
@@ -65,7 +65,7 @@ const config = {
         ip: process.env.IP || '0.0.0.0',
         port: process.env.PORT || 8080,
         mongo: {
-            uri: process.env.MONGODB_URI || 'mongodb://localhost/alert-aware'
+            uri: process.env.MONGODB_URI || 'mongodb://localhost/alertaware'
         }
     }
 }

@@ -1,11 +1,11 @@
-import { Router } from 'express'
-const router = new Router()
-
+import { Router } from "express";
+import { signin, signup, signout, isAuthenticated } from "../app/controllers/auth-controller";
+const router = new Router();
 
 // const router = app.Router();
 // const authenticationController = app.app.controllers.authenticationController;
 
-router.get('/', function (req, res) {
+router.get('/', function(req, res) {
     res.json({ "message": "Alert Aware" });
 });
 
@@ -14,8 +14,7 @@ router.get('/', function (req, res) {
 // });
 
 // //Authentication routes
-// router.post('/auth/signin', authenticationController.signin);
-// router.post('/auth/signup', authenticationController.signup);
+router.post('/auth/signin', signin);
+router.post('/auth/signup', signup);
 // router.post('/auth/signout', authenticationController.signout);
 export default router;
-

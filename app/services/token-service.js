@@ -1,132 +1,127 @@
-var jwt = require('jsonwebtoken');
+import jwt from "jsonwebtoken";
+import config from "../../config/config";
+import redis from "../../config/redis";
+import { expiration, jwtSecret } from "../../config/config";
+import * as redisService from "./redis-service";
+import Promise from "bluebird";
+const ttl = expiration;
 
-module.exports = function(application) {
+export const createToken = (payload) => {
+    return validateToken(payload)
+        .then(createTokenWithPayloadAndStore)
+        .then(token => token)
+        .catch(err => err)
+}
 
-    const config = application.config.config;
-    const redis = application.config.redis;
+function validateToken(payload) {
+    return new Promise((resolve, reject) => {
+        if (payload != null && typeof payload !== 'object') {
+            reject('payload is not an Object');
+        }
 
-    this.createToken = function(payload, cb) {
-        var ttl = config.token.expiration;
-        if (payload != null && typeof payload !== 'object') { return cb(new Error('payload is not an Object')) }
-        if (ttl != null && typeof ttl !== 'number') { return cb(new Error('ttl is not a valid Number')) }
+        if (ttl != null && typeof ttl !== 'number') {
+            reject('ttl is not a valid Number')
+        }
 
-        /**
-         * Token is divided in 3 parts:
-         *  - header
-         *  - payload (It contains some additional information that we can pass with token e.g. {user: 2, admin: true}. This gets encoded into base64.)
-         *  - signature
-         *
-         * Token is something like xxxxxxxxxxx.yyyy.zzzzzzzzzzzz. Where the x is the encoded header, the y is the encoded payload and
-         * the z is the signature. So on front-end we can decode the yyyy part (the payload) if we need.
-         */
+        resolve(payload)
+    })
+}
 
-        var token = jwt.sign(payload.toObject(), config.token.secret, { expiresIn: config.token.expiration });
+function createTokenWithPayloadAndStore(payload) {
+    let token = jwt.sign(
+        payload.toObject(),
+        jwtSecret, { expiresIn: expiration });
+
+    if (redis) {
+        return redisService.saveToken(token, ttl, payload)
+            .then((token) => token);
+    } else {
+        return token;
+    }
+}
+
+/**
+ * Expires a token by deleting the entry in redis.
+ *
+ * @method expireToken
+ * @param {Object}   headers The request headers
+ * @param {Function} cb      Callback function
+ * @returns {Function} callback function `callback(null, true)` if successfully deleted
+ */
+export const expireToken = (headers, cb) => {
+    try {
+        var token = this.extractTokenFromHeader(headers);
+        if (token == null) { return cb(new Error('Token is null')); }
 
         if (redis) {
-            console.log(redis);
-            // stores a token with payload data for a ttl period of time
-            redis.setex(token, ttl, JSON.stringify(payload), function(token, err, reply) {
+            // delete token from redis
+            redis.del(token, function(err, reply) {
                 if (err) {
                     return cb(err);
                 }
 
-                if (reply) {
-                    cb(null, token);
-                } else {
-                    cb(new Error('Token not set in Redis'));
+                if (!reply) {
+                    return cb(new Error('Não autorizado'));
                 }
-            }.bind(null, token));
+
+                return cb(null, true);
+            });
         } else {
-            cb(null, token);
+            cb(null, true);
         }
+    } catch (err) {
+        return cb(err);
+    }
+}
+
+
+/**
+ * Verify if token is valid.
+ *
+ * @method verifyToken
+ * @param {Object}   headers The request headers
+ * @param {Function} cb      Callback function
+ * @returns {Function} callback function `callback(null, JSON.parse(userData))` if token exist
+ */
+export const verifyToken = (headers, cb) => {
+    try {
+        var token = this.extractTokenFromHeader(headers);
+
+        if (token == null) { return cb(new Error('Token is null')); }
+
+        if (redis) {
+            // gets the associated data of the token
+            redis.get(token, function(err, userData) {
+                if (err) { return cb(err); }
+
+                if (!userData) { return cb(new Error('Token not found')); }
+
+                return cb(null, JSON.parse(userData));
+            });
+        } else {
+            cb(null, true);
+        }
+    } catch (err) {
+        return cb(err);
+    }
+}
+
+export const extractTokenFromHeader = (headers) => {
+    if (headers == null) throw new Error('Header is null');
+    if (headers.authorization == null) throw new Error('Authorization header is null');
+
+    var authorization = headers.authorization;
+    var authArr = authorization.split(' ');
+    if (authArr.length !== 2) throw new Error('Authorization header value is not of length 2');
+    // retrieve token
+    var token = authArr[1];
+
+    // verify token
+    try {
+        jwt.verify(token, jwtSecret);
+    } catch (err) {
+        throw new Error('The token is not valid');
     }
 
-    /**
-     * Expires a token by deleting the entry in redis.
-     *
-     * @method expireToken
-     * @param {Object}   headers The request headers
-     * @param {Function} cb      Callback function
-     * @returns {Function} callback function `callback(null, true)` if successfully deleted
-     */
-    this.expireToken = function(headers, cb) {
-        try {
-            var token = this.extractTokenFromHeader(headers);
-            if (token == null) { return cb(new Error('Token is null')); }
-
-            if (redis) {
-                // delete token from redis
-                redis.del(token, function(err, reply) {
-                    if (err) {
-                        return cb(err);
-                    }
-
-                    if (!reply) {
-                        return cb(new Error('Não autorizado'));
-                    }
-
-                    return cb(null, true);
-                });
-            } else {
-                cb(null, true);
-            }
-        } catch (err) {
-            return cb(err);
-        }
-    }
-
-
-    /**
-     * Verify if token is valid.
-     *
-     * @method verifyToken
-     * @param {Object}   headers The request headers
-     * @param {Function} cb      Callback function
-     * @returns {Function} callback function `callback(null, JSON.parse(userData))` if token exist
-     */
-    this.verifyToken = function(headers, cb) {
-        try {
-            var token = this.extractTokenFromHeader(headers);
-
-            if (token == null) { return cb(new Error('Token is null')); }
-
-            if (redis) {
-                // gets the associated data of the token
-                redis.get(token, function(err, userData) {
-                    if (err) { return cb(err); }
-
-                    if (!userData) { return cb(new Error('Token not found')); }
-
-                    return cb(null, JSON.parse(userData));
-                });
-            } else {
-                cb(null, true);
-            }
-        } catch (err) {
-            return cb(err);
-        }
-    }
-
-    this.extractTokenFromHeader = function(headers) {
-        if (headers == null) throw new Error('Header is null');
-        if (headers.authorization == null) throw new Error('Authorization header is null');
-
-        var authorization = headers.authorization;
-        var authArr = authorization.split(' ');
-        if (authArr.length !== 2) throw new Error('Authorization header value is not of length 2');
-
-        // retrieve token
-        var token = authArr[1];
-
-        // verify token
-        try {
-            jwt.verify(token, config.token.secret);
-        } catch (err) {
-            throw new Error('The token is not valid');
-        }
-
-        return token;
-    }
-
-    return this;
-};
+    return token;
+}

@@ -5,12 +5,10 @@ import morgan from 'morgan';
 import bodyParser from 'body-parser';
 import methodOverride from 'method-override';
 import { env } from './config'; //config
-import path from 'path';
 import helmet from 'helmet';
 import multer from 'multer';
-// import pathUtils from '../utils/path-utils';
 import routes from './routes';
-import authenticationConfig from './authenticationConfig';
+import authenticationConfig from './authentication-config';
 const app = express();
 const SixMonths = 15778476000;
 
@@ -65,7 +63,7 @@ function initCrossDomain(app) {
 }
 
 function initConfigAuthentication(app) {
-    require(path.resolve(authenticationConfig))(app);
+    authenticationConfig(app);
 }
 
 function initRoutes(app) {

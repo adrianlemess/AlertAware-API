@@ -1,10 +1,6 @@
-const mongoose = require('mongoose');
+import mongoose from "mongoose";
+import User from "../models/user";
 
-module.exports = function() {
-    const User = mongoose.model('User');
-
-    this.insertUser = function(user, callback) {
-        user.save(callback);
-    }
-    return this;
+export function insertUser(user, callback) {
+    user.save(callback);
 }
