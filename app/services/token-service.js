@@ -41,13 +41,9 @@ function createTokenWithPayloadAndStore(payload) {
 }
 
 function getValidtokenFromHeaders(headers) {
-    return new Promise((resolve, reject) => {
-        var token = extractTokenFromHeader(headers);
-        if (token == null)
-            reject('Token is null');
-        resolve(token);
-    })
-
+    return extractTokenFromHeader(headers)
+        .then(token => token)
+        .catch(err => err)
 }
 
 export const expireToken = (headers) => {
@@ -58,30 +54,31 @@ export const expireToken = (headers) => {
 }
 
 export const verifyToken = (headers) => {
+    console.log("verifyToken");
     return getValidtokenFromHeaders(headers)
-        .then(token => redisService.getToken(token))
+        .then(redisService.getToken)
         .then(result => console.log(result))
-        .catch(err => err)
-
+        .catch(err => console.log("teste:" + err))
 }
 
 export const extractTokenFromHeader = (headers) => {
-    console.log(headers.authorization);
-    if (headers == null) throw new Error('Header is null');
-    if (headers.authorization == null) throw new Error('Authorization header is null');
+    return new Promise((resolve, reject) => {
+        if (headers == null) reject('Header is null');
+        if (headers.authorization == null) reject('Authorization header is null');
 
-    var authorization = headers.authorization;
-    var authArr = authorization.split(' ');
-    if (authArr.length !== 2) throw new Error('Authorization header value is not of length 2');
-    // retrieve token
-    var token = authArr[1];
+        var authorization = headers.authorization;
+        var authArr = authorization.split(' ');
+        if (authArr.length !== 2) reject('Authorization header value is not of length 2');
+        // retrieve token
+        var token = authArr[1];
+        // verify token
+        try {
+            jwt.verify(token, jwtSecret);
+            resolve(token);
+        } catch (err) {
+            reject("token invalid");
+        }
 
-    // verify token
-    try {
-        jwt.verify(token, jwtSecret);
-    } catch (err) {
-        throw new Error('The token is not valid');
-    }
 
-    return token;
+    })
 }

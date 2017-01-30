@@ -46,20 +46,18 @@ export const deleteToken = (token) => {
 }
 
 export const getToken = (token) => {
-    return new Promise((result, reject) => {
+    console.log(token);
+    return new Promise((resolve, reject) => {
         if (redis) {
-
             redis.get(token, (err, userData) => {
+                console.log(err + userData)
                 if (err) { reject(err); }
 
                 if (!userData) {
                     reject('Token not found');
                 }
-
                 resolve(JSON.parse(userData));
             });
-        } else {
-            resolve(true)
         }
     })
 }

@@ -22,7 +22,6 @@ export const signout = (req, res) => {
     tokenService.expireToken(req.headers)
         .then(success => {
             if (success) {
-                console.log(success)
                 delete req.user;
                 res.sendStatus(200);
             } else {
@@ -67,14 +66,14 @@ export const signup = (req, res) => {
 }
 
 export const isAuthenticated = (req, res, next) => {
-    tokenService.verifyToken(req.headers, function(next, err, data) {
-        if (err) {
-            console.log(err.message);
-            return res.status(401).send(err.message);
-        }
-
-        req.user = data;
-
-        next();
-    }.bind(null, next));
+    tokenService.verifyToken(req.headers)
+        .then(function(next, data) {
+            req.user = data;
+            next();
+        }).catch(err => {
+            res.status(401).json({
+                "mensagem": "Não Autorizado",
+                "err ": err
+            });
+        }).bind(null, next);
 }
