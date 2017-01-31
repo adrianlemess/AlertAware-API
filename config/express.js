@@ -66,6 +66,14 @@ function initConfigAuthentication(app) {
     authenticationConfig(app);
 }
 
+function initMiddlewareFunctions(app) {
+    app.use(function(err, req, res, next) {
+        console.log(err.stack);
+        res.status(500).send({ "Error": err.stack });
+    });
+
+}
+
 function initRoutes(app) {
     app.use('/api', routes);
 }

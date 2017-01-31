@@ -5,6 +5,8 @@ import * as userService from "../services/user-service";
 import User from "../models/user";
 
 export const signin = (req, res, next) => {
+
+    console.log("teste da caceta")
     passport.authenticate('local', function(err, user) {
         var error = err;
         if (error) return res.status(401).send(error);
@@ -13,7 +15,7 @@ export const signin = (req, res, next) => {
         user.salt = undefined;
         tokenService.createToken(user)
             .then(token => {
-                res.status(201).json({ user: user, token: token });
+                res.status(202).json({ user: user, token: token });
             })
     })(req, res, next)
 }
@@ -48,21 +50,22 @@ export const signup = (req, res) => {
     // Add missing user fields
     user.provider = 'local';
     // Then save the user
-    userService.insertUser(user, function(err, user) {
-        if (err) {
-            console.log(err.message);
-            return res.status(400).send(err);
-        } else {
-            // Remove sensitive data before login
-            user.password = undefined;
-            user.salt = undefined;
+    userService.insertUser(user)
+        .then(user => removeSensitiveDataAndCreateToken(user))
+        .then(result => res.status(201).json(result))
+        .catch(err => res.status(400).json(err))
+}
 
-            tokenService.createToken(user)
-                .then(token => {
-                    res.status(201).json({ user: user, token: token });
-                })
-        }
-    });
+function removeSensitiveDataAndCreateToken(user) {
+    return new Promise((resolve, reject) => {
+        user.password = undefined;
+        user.salt = undefined;
+        tokenService.createToken(user)
+            .then(token => {
+                resolve({ user: user, token: token });
+            })
+            .catch(err => reject(err));
+    })
 }
 
 export const isAuthenticated = (req, res, next) => {
@@ -71,9 +74,8 @@ export const isAuthenticated = (req, res, next) => {
             req.user = data;
             next();
         }).catch(err => {
-            res.status(401).json({
-                "mensagem": "Não Autorizado",
-                "err ": err
+            res.status(403).json({
+                "mensagem": "Não Autorizado"
             });
         }).bind(null, next);
 }
