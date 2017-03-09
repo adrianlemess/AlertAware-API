@@ -4,11 +4,6 @@ import express from "./config/express";
 const app = express();
 
 mongoose.connect(mongo.uri);
-
-
-app.listen(port, () => {
-    console.info("Express server listening on http://%s:%d, in %s mode", ip, port, env);
-});
-
+app.set('port', 7000);
 
 export default app;

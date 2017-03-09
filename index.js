@@ -1,3 +1,5 @@
-require("babel-core/register");
+import app from './app';
 
-exports = module.exports = require("./app");
+app.listen('7000', ()=> {
+    console.log(`App is running on port ${app.get('port')} `);
+})
