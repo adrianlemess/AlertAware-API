@@ -49,8 +49,6 @@ function getValidtokenFromHeaders(headers) {
 export const expireToken = (headers) => {
     return getValidtokenFromHeaders(headers)
         .then(token => redisService.deleteToken(token))
-        .then(result => (result))
-        .catch(err => err)
 }
 
 export const verifyToken = (headers) => {

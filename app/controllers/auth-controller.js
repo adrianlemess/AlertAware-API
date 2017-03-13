@@ -6,7 +6,6 @@ import User from "../models/user";
 
 export const signin = (req, res, next) => {
 
-    console.log("teste da caceta")
     passport.authenticate('local', function(err, user) {
         var error = err;
         if (error) return res.status(401).send(error);
@@ -31,7 +30,7 @@ export const signout = (req, res) => {
             }
         })
         .catch(err => {
-            res.status(401).send(err);
+            res.status(401).send(err.message);
         })
 }
 

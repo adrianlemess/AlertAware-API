@@ -27,20 +27,16 @@ export const deleteToken = (token) => {
     return new Promise((resolve, reject) => {
         if (redis) {
             redis.del(token, function(err, reply) {
-                console.log(err)
-                console.log(reply);
                 if (err) {
                     reject(err);
-                }
-
-                if (!reply) {
-                    reject({ "result": true, "message": "Token not found" });
-                }
-                resolve({ "result": true, "message": "Deletado com sucesso" });
+                } else if (reply === 0) {
+                    reject(new Error("Token not found"));
+                } else if (reply === 1)
+                    resolve("Deletado com sucesso");
             })
 
         } else {
-            resolve({ "result": true, "message": "Redis unavailable" });
+            resolve("Redis unavailable");
         }
     })
 }
