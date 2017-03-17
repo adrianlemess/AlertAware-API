@@ -1,0 +1,36 @@
+<ion-view title="Histórico de Mensagens" id="page5" class=" ">
+    <ion-content onload="refresh()" padding="true" class="has-header content-timeline container">
+        <ion-refresher
+            pulling-icon="none"
+            spinner="bubbles"
+            disable-pulling-rotation="true"
+            on-refresh="doRefresh()">
+        </ion-refresher>
+         <div ng-if = "countBadge > 0" class="labelNotification">
+            <span class="label label-primary">Novas notificações: {{countBadge}}
+            </span>
+        </div>
+        <div id="timeline">
+             <div ng-repeat="item in items" class="timeline-item " id="item{{item.count}}" >
+                 <div ng-if="item.priority == 3" class="timeline-icon-small timeline-icon ">
+                    <i class="ion-alert"></i>
+                 </div>
+                 <div ng-if="item.priority == 2" class="timeline-icon-medium timeline-icon ">
+                    <i class="ion-alert"></i>
+                 </div>
+                 <div  ng-if="item.priority == 1" class="timeline-icon-large timeline-icon ">
+                    <i class="ion-alert"></i>
+                 </div>
+                  <div  class="timeline-content">
+                    <div class="title-card">
+                            <h2>{{item.title}}</h2>
+                    </div>
+                    <div class="corpo">
+                            <p>{{item.message}}</p>
+                    </div>
+                  </div>
+                </div>  
+             </div>
+        </div>
+    </ion-content>
+</ion-view>
