@@ -8,7 +8,7 @@ const ttl = expiration;
 
 export const createToken = (payload) => {
     return validateToken(payload)
-        .then(createTokenWithPayloadAndStore)
+        .then(user => createTokenWithPayloadAndStore(user))
         .then(token => token)
         .catch(err => err)
 }
@@ -33,30 +33,22 @@ function createTokenWithPayloadAndStore(payload) {
         jwtSecret, { expiresIn: expiration });
 
     if (redis) {
-        return redisService.saveToken(token, ttl, payload)
-            .then((token) => token);
+        return redisService.saveToken(token, ttl, payload);
     } else {
         return token;
     }
 }
 
-function getValidtokenFromHeaders(headers) {
-    return extractTokenFromHeader(headers)
-        .then(token => token)
-        .catch(err => err)
-}
-
 export const expireToken = (headers) => {
-    return getValidtokenFromHeaders(headers)
+    return extractTokenFromHeader(headers)
         .then(token => redisService.deleteToken(token))
 }
 
 export const verifyToken = (headers) => {
-    console.log("verifyToken");
-    return getValidtokenFromHeaders(headers)
-        .then(redisService.getToken)
-        .then(result => console.log(result))
-        .catch(err => console.log("teste:" + err))
+    return extractTokenFromHeader(headers)
+        .then(token => redisService.getToken(token))
+        .then(result => result)
+
 }
 
 export const extractTokenFromHeader = (headers) => {
@@ -66,17 +58,17 @@ export const extractTokenFromHeader = (headers) => {
 
         var authorization = headers.authorization;
         var authArr = authorization.split(' ');
+        console.log(authArr)
         if (authArr.length !== 2) reject('Authorization header value is not of length 2');
         // retrieve token
         var token = authArr[1];
         // verify token
         try {
-            jwt.verify(token, jwtSecret);
+            jwt.verify(token, config.token.secret);
             resolve(token);
         } catch (err) {
             reject("token invalid");
         }
-
 
     })
 }

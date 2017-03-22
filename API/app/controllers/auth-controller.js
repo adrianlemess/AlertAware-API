@@ -1,8 +1,8 @@
-import mongoose from "mongoose";
 import passport from "passport";
 import * as tokenService from "../services/token-service";
 import * as userService from "../services/user-service";
 import User from "../models/user";
+import * as userUtils from "../utils/user.utils";
 
 export const signin = (req, res, next) => {
 
@@ -49,32 +49,23 @@ export const signup = (req, res) => {
     // Add missing user fields
     user.provider = 'local';
     // Then save the user
+
     userService.insertUser(user)
-        .then(user => removeSensitiveDataAndCreateToken(user))
-        .then(result => res.status(201).json(result))
+        .then(user => userUtils.removeSensitiveData(user))
+        .then(userResult = tokenService.createToken(userResult))
+        .then(validUser => console.log("user", validUser))
+        // res.status(201).json({ user: validUser, token: token }
         .catch(err => res.status(400).json(err))
 }
 
-function removeSensitiveDataAndCreateToken(user) {
-    return new Promise((resolve, reject) => {
-        user.password = undefined;
-        user.salt = undefined;
-        tokenService.createToken(user)
-            .then(token => {
-                resolve({ user: user, token: token });
-            })
-            .catch(err => reject(err));
-    })
-}
 
 export const isAuthenticated = (req, res, next) => {
+
     tokenService.verifyToken(req.headers)
-        .then(function(next, data) {
+        .then((data) => {
             req.user = data;
             next();
         }).catch(err => {
-            res.status(403).json({
-                "mensagem": "Não Autorizado"
-            });
+            res.status(403).json({ "mensagem": "Não Autorizado" });
         }).bind(null, next);
 }

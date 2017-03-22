@@ -52,7 +52,7 @@ var userSchema = new mongoose.Schema({
         registrationId: { type: String, index: { unique: false } },
         celNumber: String
     }],
-    roles: [{ type: String }]
+    role: String
 });
 
 userSchema.pre('save', function(next) {

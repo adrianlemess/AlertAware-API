@@ -2,8 +2,8 @@ import redis from "../../config/redis";
 import Promise from "bluebird";
 
 export const saveToken = (token, ttl, payload) => {
-
     // stores a token with payload data for a ttl period of time
+
     return new Promise((resolve, reject) => {
         if (redis) {
             redis.setex(token, ttl, JSON.stringify(payload), function(token, err, reply) {
@@ -25,6 +25,7 @@ export const saveToken = (token, ttl, payload) => {
 
 export const deleteToken = (token) => {
     return new Promise((resolve, reject) => {
+
         if (redis) {
             redis.del(token, function(err, reply) {
                 if (err) {
@@ -42,7 +43,7 @@ export const deleteToken = (token) => {
 }
 
 export const getToken = (token) => {
-    console.log(token);
+
     return new Promise((resolve, reject) => {
         if (redis) {
             redis.get(token, (err, userData) => {
