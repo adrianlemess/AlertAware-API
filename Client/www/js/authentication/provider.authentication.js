@@ -22,11 +22,12 @@
                         });
                 },
                 signin: function(params) {
-                    
+                    alert(JSON.stringify(params));
                     return Restangular
                         .all('/auth/signin')
                         .post(params)
                         .then(function(response) {  
+                            alert(JSON.stringify(response))
                             saveUserAndToken(response.token);
                         });
                 },

@@ -27,7 +27,7 @@ angular.module('app', ['ionic','restangular','LocalStorageModule','app.service',
          * Route provider configuration based on these config constant values
          *********************************************************************/
         // set restful base API RouteSERVER_API_URL
-        var SERVER_API_URL = "https://tcc-interface-administrativa-adrianlemess.c9users.io/api"
+        var SERVER_API_URL = "http://localhost:7000/api"
         Restangular.setBaseUrl(SERVER_API_URL);
    
           

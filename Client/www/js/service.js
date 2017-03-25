@@ -11,7 +11,7 @@ angular.module('app.service', [])
                 celNumber:celNumber
             }
 
-        var url = "https://tcc-interface-administrativa-adrianlemess.c9users.io/api/device";
+        var url = "https://localhost:7000/api/device";
         var req = {
          method: 'POST',
          url: url,				   
@@ -31,13 +31,13 @@ angular.module('app.service', [])
 .factory('historicService', function($http) {
     return {
       getListUserHistoric: function(userId){
-              return $http.get("https://tcc-interface-administrativa-adrianlemess.c9users.io/api/listHistoric/"+userId).then(function(response){
+              return $http.get("https://localhost:7000/api/listHistoric/"+userId).then(function(response){
               var items = response.data; 
               return items;
           });
          },
       getHistoric: function(id){
-           return $http.get("https://tcc-interface-administrativa-adrianlemess.c9users.io/api/listHistoric/"+id).then(function(response){
+           return $http.get("https://localhost:7000/api/listHistoric/"+id).then(function(response){
                 var items = response.data;
                 return items;
             });
