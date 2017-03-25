@@ -11,14 +11,19 @@ function localStrategy(User, config) {
     }, (username, password, done) => {
         findValidUser(username, passport)
             .then(user => {
-                validatePasswordIfUsernameIsValid(user, password)
-                    .then(result => {
-                        if (!result) {
-                            done(null, result, "Password or Username not match");
-                        }
-                        // success
-                        done(null, user);
-                    })
+                if (!user) {
+                    done("Password or Username not match", null)
+                } else {
+                    validatePasswordIfUsernameIsValid(user, password)
+                        .then(result => {
+                            if (!result) {
+                                done("Password or Username not match", result);
+                            }
+                            // success
+                            done(null, user);
+                        })
+                }
+
             })
             .catch(err => done(err, null));
     }))
@@ -26,21 +31,12 @@ function localStrategy(User, config) {
 }
 
 function findValidUser(username, passport) {
-    return new Promise((resolve, reject) => {
-        User.findOne({
-            username: username.toLowerCase()
-        }, (err, user) => {
-            if (err) reject(err);
-            resolve(user);
-        })
+    return User.findOne({
+        username: username.toLowerCase()
     })
 }
 
 function validatePasswordIfUsernameIsValid(user, password) {
-    // no user found with that username
-    if (!user) {
-        throw new Error("The username is not registered.");
-    }
     return user.comparePassword(password)
 }
 
