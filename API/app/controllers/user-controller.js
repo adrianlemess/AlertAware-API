@@ -1,6 +1,6 @@
 import * as userService from "../services/user-service";
 import User from "../models/user";
-import * as userUtils from "../utils/user.utils";
+import * as userUtils from "../utils/user-utils";
 
 export const getUserById = (req, res, next) => {
     const userId = req.params.userId || '';

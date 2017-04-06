@@ -40,10 +40,10 @@ export const signout = (req, res) => {
 }
 
 export const signup = (req, res) => {
-    var email = req.body.email || '';
-    var password = req.body.password || '';
-    var username = req.body.username || '';
-    var name = req.body.name || '';
+    const email = req.body.email || '';
+    const password = req.body.password || '';
+    const username = req.body.username || '';
+    const name = req.body.name || '';
 
     if (email == '' || password == '' || username == '' || name == '') {
         return res.sendStatus(400);

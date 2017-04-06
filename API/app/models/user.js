@@ -9,7 +9,7 @@ const validateLocalStrategyProperty = function(property) {
 };
 
 
-var userSchema = new mongoose.Schema({
+let userSchema = new mongoose.Schema({
     name: {
         type: String,
         trim: true,
@@ -47,16 +47,18 @@ var userSchema = new mongoose.Schema({
     regId: String,
     updated_at: Date,
     created_at: Date,
-    devices: [{
+    devices: {
         deviceId: { type: String, index: { unique: false } },
         registrationId: { type: String, index: { unique: false } },
-        celNumber: String
-    }],
+        celNumber: String,
+        updated_at: Date,
+        created_at: Date
+    },
     role: String
 });
 
 userSchema.pre('save', function(next) {
-    var user = this;
+    let user = this;
 
     // only hash the password if it has been modified (or is new)
     if (!user.isModified('password')) { return next(); }
@@ -92,7 +94,7 @@ userSchema
 userSchema
     .path('username')
     .validate(function(value, respond) {
-        var self = this;
+        let self = this;
         this.constructor.findOne({ username: value }, function(err, user) {
             if (err) throw err;
             if (user) {
@@ -105,7 +107,7 @@ userSchema
 
 userSchema.pre('save', function(next) {
     // get the current date
-    var currentDate = new Date();
+    let currentDate = new Date();
 
     // change the updated_at field to current date
     this.updated_at = currentDate;
@@ -119,7 +121,7 @@ userSchema.pre('save', function(next) {
 
 userSchema.pre('update', function(next) {
     // get the current date
-    var currentDate = new Date();
+    let currentDate = new Date();
 
     // change the updated_at field to current date
     this.updated_at = currentDate;

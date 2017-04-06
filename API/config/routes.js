@@ -1,6 +1,8 @@
 import { Router } from "express";
 import { signin, signup, signout, isAuthenticated } from "../app/controllers/auth-controller";
 import { getUsers, getUserById } from '../app/controllers/user-controller';
+import * as deviceController from '../app/controllers/devices-controller';
+
 const router = new Router();
 
 router.get('/', function(req, res) {
@@ -17,6 +19,12 @@ router.post('/auth/signup', signup);
 router.post('/auth/signout', signout);
 
 //Users routes
-router.get('/users', getUsers);
-router.get('/user/:userId', getUserById);
+router.get('/users', isAuthenticated, getUsers);
+router.get('/user/:userId', isAuthenticated, getUserById);
+router.get('/users/devices', isAuthenticated, deviceController.getUsersWithDevicesRegistred)
+    //Devices router
+router.get('/device/user/:userId', isAuthenticated, deviceController.getUserDevice);
+router.get('/device/:registrationId', isAuthenticated, deviceController.getDeviceByRegistrationId);
+router.post('device/:userId', isAuthenticated, deviceController.registerDevice);
+
 export default router;
