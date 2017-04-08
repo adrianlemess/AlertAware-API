@@ -22,9 +22,11 @@ router.post('/auth/signout', signout);
 router.get('/users', isAuthenticated, getUsers);
 router.get('/user/:userId', isAuthenticated, getUserById);
 router.get('/users/devices', isAuthenticated, deviceController.getUsersWithDevicesRegistred)
-    //Devices router
+
+//Devices router
 router.get('/device/user/:userId', isAuthenticated, deviceController.getUserDevice);
 router.get('/device/:registrationId', isAuthenticated, deviceController.getDeviceByRegistrationId);
-router.post('device/:userId', isAuthenticated, deviceController.registerDevice);
+router.post('/device/:userId', deviceController.registerDevice);
+
 
 export default router;

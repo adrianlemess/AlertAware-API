@@ -8,7 +8,6 @@ const validateLocalStrategyProperty = function(property) {
     return ((this.provider !== 'local' && !this.updated) || property.length);
 };
 
-
 let userSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -47,9 +46,9 @@ let userSchema = new mongoose.Schema({
     regId: String,
     updated_at: Date,
     created_at: Date,
-    devices: {
-        deviceId: { type: String, index: { unique: false } },
-        registrationId: { type: String, index: { unique: false } },
+    device: {
+        deviceId: { type: String },
+        registrationId: { type: String },
         celNumber: String,
         updated_at: Date,
         created_at: Date

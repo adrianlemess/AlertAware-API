@@ -7,13 +7,13 @@ import User from "../models/user";
 export const signin = (req, res, next) => {
 
     passport.authenticate('local', (err, user) => {
-
         var error = err;
         if (error) {
             res.status(401).json(error)
         } else {
             user.password = undefined;
             user.salt = undefined;
+            console.log(user);
             tokenService.createToken(user)
                 .then(token => {
                     res.status(202).json({ user: user, token: token });
@@ -50,10 +50,11 @@ export const signup = (req, res) => {
     }
 
     // Init Variables
-    var user = new User(req.body);
+    let user = new User(req.body);
     // Add missing user fields
     user.provider = 'local';
     // Then save the user
+    console.log(user);
     userService.insertUser(user)
         .then(user => removeSensitiveDataAndCreateToken(user))
         .then(result => res.status(201).json(result))
