@@ -25,7 +25,7 @@ function filterUsersWithDevice(listUsers) {
     })
 }
 export const getDeviceByRegistrationId = (registrationId) => {
-        return User.find({ device: { registrationId: registrationId } })
+    return User.findOne({ 'device.registrationId': registrationId  })
 }
 
     //maybe a save method instead update
