@@ -28,5 +28,4 @@ router.get('/device/user/:userId', isAuthenticated, deviceController.getUserDevi
 router.get('/device/:registrationId', isAuthenticated, deviceController.getDeviceByRegistrationId);
 router.post('/device/:userId', deviceController.registerDevice);
 
-
 export default router;
