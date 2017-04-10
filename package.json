@@ -6,7 +6,8 @@
     "scripts": {
         "babel-debug": "babel-node app.js --debug",
         "dev": "cross-env NODE_ENV=development nodemon start.js",
-        "start": "npm run dev",
+        "start": "npm run prod",
+        "prod": "cross-env NODE_ENV=production nodemon start.js",
         "check": "eslint *.js",
         "test-integration": "cross-env NODE_ENV=test mocha test --recursive --compilers js:babel-core/register --reporter spec --opts test/integration/mocha.opts"
     },
