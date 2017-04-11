@@ -3,7 +3,7 @@
  */
 
 //Dependencies
-import historicService from '../services/historic-service';
+import * as historicService from '../services/historic-service';
 import Historic from '../models/historic';
 
 export const saveHistoric = (req, res) => {

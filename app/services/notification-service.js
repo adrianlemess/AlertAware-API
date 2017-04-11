@@ -12,13 +12,7 @@ export const sendMessageByEmail = (userId, message, subject) => {
             .then(user => {
                 sendEmail(user.email, message, subject)
                     .then(result => {
-                        let historic = {
-                            user: user._id,
-                            message: message,
-                            subject: subject,
-                            send_way: "email"
-                        }
-                        historicService.saveHistoric(historic);
+                        historicService.saveHistoric(message, subject, user._id, "email");
                         resolve(result);
                     })
                     .catch(err => reject(err));
@@ -50,22 +44,18 @@ function createTransport() {
 }
 
 export const sendMessageByPushNotification = (userId, message, subject) => {
-    return User.findById(userId)
-        .then(user => {
-            let values = preparePushCredentialsAndMessage(user.device.registrationId, message, subject)
-            sendMessageByPush(values.notification, values.credentials)
-                .then(result => {
-                    const historic = {
-                        user: user,
-                        message: message,
-                        subject: subject,
-                        send_way: "email"
-                    }
-                    historicService.saveHistoric(historic);
-                    return result;
-                })
-                .catch(err => console.log(err));
-        })
+    return new Promise((resolve, reject) => {
+        User.findById(userId)
+            .then(user => {
+                let values = preparePushCredentialsAndMessage(user.device.registrationId, message, subject)
+                sendMessageByPush(values.notification, values.credentials)
+                    .then(result => {
+                        historicService.saveHistoric(message, subject, user._id, "push");
+                        resolve(result);
+                    })
+                    .catch(err => reject(err));
+            })
+    })
 }
 
 function preparePushCredentialsAndMessage(registrationId, message, subject) {

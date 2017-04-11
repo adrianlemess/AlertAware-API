@@ -1,5 +1,5 @@
 import Historic from '../models/historic';
-import userService from './user-service';
+import * as userService from './user-service';
 
 export const getHistoric = (historicId) => {
     return Historic.findOne({ _id: historicId });
@@ -7,15 +7,16 @@ export const getHistoric = (historicId) => {
 
 export const getListUserHistoric = (userId) => {
     return userService.getUserById(userId)
-        .then(User => Historic.find({ users: { $in: [user._id] } }));
+        .then(User => Historic.find({ user: userId }));
 }
 
-export const saveHistoric = (historic) => {
-    console.log(historic)
-    if (typeof historic == Historic) {
-        return historic.save();
-    } else {
-        const historictosave = new Historic(historic);
-        return historictosave.save();
+export const saveHistoric = (message, subject, userId, send_way) => {
+    let historic = {
+        user: userId,
+        message: message,
+        subject: subject,
+        send_way: send_way
     }
+    const historictosave = new Historic(historic);
+    return historictosave.save();
 }
