@@ -21,7 +21,7 @@ router.post('/auth/signup', signup);
 router.post('/auth/signout', signout);
 
 //Users routes
-router.get('/users', isAuthenticated, getUsers);
+router.get('/users', getUsers);
 router.get('/user/:userId', isAuthenticated, getUserById);
 router.get('/users/devices', isAuthenticated, deviceController.getUsersWithDevicesRegistred)
 
@@ -31,8 +31,8 @@ router.get('/device/:registrationId', isAuthenticated, deviceController.getDevic
 router.post('/device/:userId', deviceController.registerDevice);
 
 //Notification routes
-router.post('/notification/email/:userId', isAuthenticated, notificationController.sendEmail)
-router.post('/notification/push/:userId', isAuthenticated, notificationController.sendPushNotification)
+router.post('/notification/email/:userId', notificationController.sendEmail)
+router.post('/notification/push/:userId', notificationController.sendPushNotification)
 
 //Historic routes
 router.post('/historic/', isAuthenticated, historicController.saveHistoric);

@@ -43,6 +43,7 @@ let userSchema = new mongoose.Schema({
     salt: {
         type: String
     },
+    imageAvatar: String,
     updated_at: Date,
     created_at: Date,
     device: {
