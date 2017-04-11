@@ -5,7 +5,6 @@ import * as userService from "../services/user-service";
 import User from "../models/user";
 
 export const signin = (req, res, next) => {
-
     passport.authenticate('local', (err, user) => {
         var error = err;
         if (error) {

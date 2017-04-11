@@ -2,6 +2,8 @@ import { Router } from "express";
 import { signin, signup, signout, isAuthenticated } from "../app/controllers/auth-controller";
 import { getUsers, getUserById } from '../app/controllers/user-controller';
 import * as deviceController from '../app/controllers/devices-controller';
+import * as notificationController from '../app/controllers/notification-controller';
+import * as historicController from '../app/controllers/historic-controller';
 
 const router = new Router();
 
@@ -23,9 +25,17 @@ router.get('/users', isAuthenticated, getUsers);
 router.get('/user/:userId', isAuthenticated, getUserById);
 router.get('/users/devices', isAuthenticated, deviceController.getUsersWithDevicesRegistred)
 
-//Devices router
+//Devices routes
 router.get('/device/user/:userId', isAuthenticated, deviceController.getUserDevice);
 router.get('/device/:registrationId', isAuthenticated, deviceController.getDeviceByRegistrationId);
 router.post('/device/:userId', deviceController.registerDevice);
 
+//Notification routes
+router.post('/notification/email/:userId', isAuthenticated, notificationController.sendEmail)
+router.post('/notification/push/:userId', isAuthenticated, notificationController.sendPushNotification)
+
+//Historic routes
+router.post('/historic/', isAuthenticated, historicController.saveHistoric);
+router.get('/historic/:historicId', isAuthenticated, historicController.getHistoric);
+router.get('/historic/user/:userId', isAuthenticated, historicController.getListUserHistoric);
 export default router;
